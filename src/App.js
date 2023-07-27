@@ -32,18 +32,7 @@ function App() {
       status: 'In progress'
     };
 
-    axios.post('/api/tasks', data)
-       .then(response => {
-         // İstek başarılıysa yapılacak işlemler
-         console.log(response.data);
-         getTasks(); // Yeniden görevleri getir
-         setTask(''); // Görev girişini sıfırla
-       })
-       .catch(error => {
-         // Hata durumunda yapılacak işlemler
-         console.error(error);
-       });
-   };
+
  
    const markAsFinished = (taskId) => {
      axios.put(`/api/tasks/${taskId}`, { status: 'Finished' })
