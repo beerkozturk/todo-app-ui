@@ -1,64 +1,59 @@
-import logo from './logo.svg';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.css';
-import axios from 'axios';
+import { Api } from "./helpers/baseAxios";
 import React, { useState } from 'react';
 import { useEffect } from 'react';
 
 function App() {
-
+  const api = new Api();
   const [todo, setTodo] = useState([]);
 
   useEffect(() => {
-    getTasks();
+
+    api.getTasks().then(response => {
+      console.log(response);
+      debugger
+      setTodo(response.data);
+
+    }).catch(error => {
+      console.error(error);
+    });
   }, []);
 
-  const getTasks = () => {
-    axios.get('https://localhost:7166/ToDo')
-      .then(response => {
-        console.log(response);
-        debugger
-        setTodo(response.data);
-      })
-      .catch(error => {
-        console.error(error);
-      });
+
+  const addNewToDoItem = (newToDoData) => {
+
+    // baseAxios.post('/ToDo/AddToDoItem', newToDoData)
+    //   .then(response => {
+    //     console.log('New ToDo item added:', response.data);
+    //   })
+    //   .catch(error => {
+    //     console.error('Error adding new ToDo item:', error);
+    //   });
   };
 
-  /*const handleFormSubmit = (event) => {
-    event.preventDefault();
-    const data = {
-      task: task,
-      status: 'In progress'
-    };
+  // const getTasks = () => {
+  //   axios.get('https://localhost:7166/ToDo')
+  //     .then(response => {
+  //       console.log(response);
+  //       debugger
+  //       setTodo(response.data);
+  //     })
+  //     .catch(error => {
+  //       console.error(error);
+  //     });
+  // };
 
-
- 
-   const markAsFinished = (taskId) => {
-     axios.put(`/api/tasks/${taskId}`, { status: 'Finished' })
-       .then(response => {
-         // İstek başarılıysa yapılacak işlemler
-         console.log(response.data);
-         getTasks(); // Yeniden görevleri getir
-       })
-       .catch(error => {
-         // Hata durumunda yapılacak işlemler
-         console.error(error);
-       });
-   };
- 
-   const deleteTask = (taskId) => {
-     axios.delete(`/api/tasks/${taskId}`)
-       .then(response => {
-         // İstek başarılıysa yapılacak işlemler
-         console.log(response.data);
-         getTasks(); // Yeniden görevleri getir
-       })
-       .catch(error => {
-         // Hata durumunda yapılacak işlemler
-         console.error(error);
-       });
-   };*/
+  const deleteTask = (taskId) => {
+    // axios.delete(`/api/tasks/${taskId}`)
+    //   .then(response => {
+    //     console.log(response.data);
+    //     getTasks();
+    //   })
+    //   .catch(error => {
+    //     console.error(error);
+    //   });
+  };
 
   return (
     <div className="App">
@@ -74,17 +69,20 @@ function App() {
                 <form className="row row-cols-lg-auto g-3 justify-content-center align-items-center mb-4 pb-2">
                   <div className="col-12">
                     <div className="form-outline">
+                      <label className="form-label" htmlFor="form1">Title</label>
                       <input type="text" id="form1" className="form-control" />
-                      <label className="form-label" htmlFor="form1">Enter a task here</label>
                     </div>
-                  </div>
+                    <div className="form-outline">
+                      <label className="form-label" htmlFor="form2">Description</label>
+                      <input type="text" id="form2" className="form-control" />
+                    </div>
 
-                  <div className="col-12">
-                    <button type="submit" className="btn btn-primary">Save</button>
-                  </div>
-
-                  <div className="col-12">
-                    <button type="submit" className="btn btn-warning">Get tasks</button>
+                    <div className="col-12">
+                      <button type="submit" onClick={() => addNewToDoItem()} className="btn btn-primary">Save</button>
+                    </div>
+                    <div className="col-12">
+                      <button type="submit" className="btn btn-warning">Get tasks</button>
+                    </div>
                   </div>
                 </form>
 
@@ -105,10 +103,10 @@ function App() {
                           <td>{item.id}</td>
                           <td>{item.title}</td>
                           <td>{item.description}</td>
-                          <td>{item.isComplated == true ? 'Tamamlandı √' : 'Henüz Tamamlanmadı X'}</td>
+                          <td>{item.isComplated == true ? 'Tamamlandi √' : 'Henüz Tamamlanmadi X'}</td>
                           <td>
-                            <button type="submit" className="btn btn-danger">Delete</button>
-                            <button type="submit" className="btn btn-success ms-1">Finished</button>
+                            <button type="button" onClick={() => deleteTask(item.id)} className="btn btn-danger">Delete</button>
+                            <button type="button" className="btn btn-success ms-1">Finished</button>
                           </td>
                         </tr>
                       )
