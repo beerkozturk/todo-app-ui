@@ -1,58 +1,49 @@
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.css';
-import { Api } from "./helpers/baseAxios";
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { useEffect } from 'react';
+import TodoService from './services/todoService';
 
 function App() {
-  const api = new Api();
   const [todo, setTodo] = useState([]);
+  const title = useRef();
+  const description = useRef();
+
+  const todoService = new TodoService();
 
   useEffect(() => {
-
-    api.getTasks().then(response => {
-      console.log(response);
-      debugger
+    todoService.getTasks().then(response => {
       setTodo(response.data);
-
     }).catch(error => {
       console.error(error);
     });
   }, []);
 
 
-  const addNewToDoItem = (newToDoData) => {
-
-    // baseAxios.post('/ToDo/AddToDoItem', newToDoData)
-    //   .then(response => {
-    //     console.log('New ToDo item added:', response.data);
-    //   })
-    //   .catch(error => {
-    //     console.error('Error adding new ToDo item:', error);
-    //   });
+  const addItem = () => {
+    const titleValue = title?.current?.value?.trim();
+    const descriptionValue=description?.current?.value?.trim();
+    if(titleValue!="" && descriptionValue!=""){
+      const newTodo={
+        id:0,
+        title:titleValue,
+        description:descriptionValue,
+        isComplated:false
+      }
+      console.log(newTodo);
+      todoService.AddNewToDoItem(newTodo).then(response=>{
+        console.log(response);
+      }).catch(err=>{
+        console.log(err);
+      });
+    }else{
+      alert("önce dolu gir")
+    }
   };
-
-  // const getTasks = () => {
-  //   axios.get('https://localhost:7166/ToDo')
-  //     .then(response => {
-  //       console.log(response);
-  //       debugger
-  //       setTodo(response.data);
-  //     })
-  //     .catch(error => {
-  //       console.error(error);
-  //     });
-  // };
-
+  
+  
   const deleteTask = (taskId) => {
-    // axios.delete(`/api/tasks/${taskId}`)
-    //   .then(response => {
-    //     console.log(response.data);
-    //     getTasks();
-    //   })
-    //   .catch(error => {
-    //     console.error(error);
-    //   });
+     
   };
 
   return (
@@ -70,18 +61,15 @@ function App() {
                   <div className="col-12">
                     <div className="form-outline">
                       <label className="form-label" htmlFor="form1">Title</label>
-                      <input type="text" id="form1" className="form-control" />
+                      <input ref={title} type="text" id="form1" className="form-control" />
                     </div>
                     <div className="form-outline">
                       <label className="form-label" htmlFor="form2">Description</label>
-                      <input type="text" id="form2" className="form-control" />
+                      <input ref={description} type="text" id="form2" className="form-control" />
                     </div>
 
-                    <div className="col-12">
-                      <button type="submit" onClick={() => addNewToDoItem()} className="btn btn-primary">Save</button>
-                    </div>
-                    <div className="col-12">
-                      <button type="submit" className="btn btn-warning">Get tasks</button>
+                    <div style={{width:"100%",display:"flex",marginTop:"20px",justifyContent:"center"}}>
+                      <a onClick={() => addItem()} className="btn btn-primary">Save</a>
                     </div>
                   </div>
                 </form>
